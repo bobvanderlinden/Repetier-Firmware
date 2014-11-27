@@ -53,12 +53,14 @@ To override EEPROM settings with config settings, set EEPROM_MODE 0
 // MEGA/RAMPS up to 1.2       = 3
 // RAMPS 1.3/RAMPS 1.4        = 33
 // Azteeg X3                  = 34
+// Azteeg X3 Pro              = 35
 // Ultimaker Shield 1.5.7     = 37
 // Gen6                       = 5
 // Gen6 deluxe                = 51
 // Sanguinololu up to 1.1     = 6
 // Sanguinololu 1.2 and above = 62
 // Melzi board                = 63  // Define REPRAPPRO_HUXLEY if you have one for correct HEATER_1_PIN assignment!
+// Azteeg X1                  = 65
 // Gen7 1.1 till 1.3.x        = 7
 // Gen7 1.4.1 and later       = 71
 // Sethi 3D_1                 = 72
@@ -67,6 +69,8 @@ To override EEPROM settings with config settings, set EEPROM_MODE 0
 // Foltyn 3D Master           = 12
 // MegaTronics 1.0            = 70
 // Megatronics 2.0            = 701
+// Megatronics 3.0            = 703 // Thermistors predefined not thermocouples
+// Minitronics 1.0            = 702
 // RUMBA                      = 80  // Get it from reprapdiscount
 // FELIXprinters              = 101
 // Rambo                      = 301
@@ -100,7 +104,7 @@ is a full cartesian system where x, y and z moves are handled by separate motors
 Cases 1 and 2 cover all needed xy H gantry systems. If you get results mirrored etc. you can swap motor connections for x and y.
 If a motor turns in the wrong direction change INVERT_X_DIR or INVERT_Y_DIR.
 */
-#define DRIVE_SYSTEM 0
+#define DRIVE_SYSTEM 3
 
 // ##########################################################################################
 // ##                               Calibration                                            ##
@@ -118,13 +122,13 @@ If a motor turns in the wrong direction change INVERT_X_DIR or INVERT_Y_DIR.
 
 #if DELTA_DRIVE_TYPE == 0
 /** \brief Pitch in mm of drive belt. GT2 = 2mm */
-#define BELT_PITCH 2
+#define BELT_PITCH 4
 /** \brief Number of teeth on X, Y and Z tower pulleys */
-#define PULLEY_TEETH 20
+#define PULLEY_TEETH 15
 #define PULLEY_CIRCUMFERENCE (BELT_PITCH * PULLEY_TEETH)
 #elif DELTA_DRIVE_TYPE == 1
 /** \brief Filament pulley diameter in milimeters */
-#define PULLEY_DIAMETER 10
+#define PULLEY_DIAMETER 18
 #define PULLEY_CIRCUMFERENCE (PULLEY_DIAMETER * 3.1415927)
 #endif
 
@@ -132,7 +136,7 @@ If a motor turns in the wrong direction change INVERT_X_DIR or INVERT_Y_DIR.
 #define STEPS_PER_ROTATION 200
 
 /** \brief Micro stepping rate of X, Y and Y tower stepper drivers */
-#define MICRO_STEPS 16
+#define MICRO_STEPS 32
 
 // Calculations
 #define AXIS_STEPS_PER_MM ((float)(MICRO_STEPS * STEPS_PER_ROTATION) / PULLEY_CIRCUMFERENCE)
@@ -148,13 +152,13 @@ If a motor turns in the wrong direction change INVERT_X_DIR or INVERT_Y_DIR.
 /** \brief Number of steps for a 1mm move in x direction.
 For xy gantry use 2*belt moved!
 Overridden if EEPROM activated. */
-#define XAXIS_STEPS_PER_MM 98.425196
+#define XAXIS_STEPS_PER_MM 111.9947
 /** \brief Number of steps for a 1mm move in y direction.
 For xy gantry use 2*belt moved!
 Overridden if EEPROM activated.*/
-#define YAXIS_STEPS_PER_MM 98.425196
+#define YAXIS_STEPS_PER_MM 111.9947
 /** \brief Number of steps for a 1mm move in z direction  Overridden if EEPROM activated.*/
-#define ZAXIS_STEPS_PER_MM 2560
+#define ZAXIS_STEPS_PER_MM 111.9947
 #endif
 
 // ##########################################################################################
@@ -593,11 +597,11 @@ A good start is 30 lower then the optimal value. You need to leave room for cool
 use a mechanical endstop connected with GND. Set value to false for no pullup
 on this endstop.
 */
-#define ENDSTOP_PULLUP_X_MIN false
-#define ENDSTOP_PULLUP_Y_MIN false
-#define ENDSTOP_PULLUP_Z_MIN false
-#define ENDSTOP_PULLUP_X_MAX true
-#define ENDSTOP_PULLUP_Y_MAX true
+#define ENDSTOP_PULLUP_X_MIN true
+#define ENDSTOP_PULLUP_Y_MIN true
+#define ENDSTOP_PULLUP_Z_MIN true
+#define ENDSTOP_PULLUP_X_MAX false
+#define ENDSTOP_PULLUP_Y_MAX false
 #define ENDSTOP_PULLUP_Z_MAX false
 
 //set to true to invert the logic of the endstops
@@ -606,15 +610,15 @@ on this endstop.
 #define ENDSTOP_Z_MIN_INVERTING true
 #define ENDSTOP_X_MAX_INVERTING false
 #define ENDSTOP_Y_MAX_INVERTING false
-#define ENDSTOP_Z_MAX_INVERTING true
+#define ENDSTOP_Z_MAX_INVERTING false
 
 // Set the values true where you have a hardware endstop. The Pin number is taken from pins.h.
 
-#define MIN_HARDWARE_ENDSTOP_X true
-#define MIN_HARDWARE_ENDSTOP_Y true
+#define MIN_HARDWARE_ENDSTOP_X false
+#define MIN_HARDWARE_ENDSTOP_Y false
 #define MIN_HARDWARE_ENDSTOP_Z false
-#define MAX_HARDWARE_ENDSTOP_X false
-#define MAX_HARDWARE_ENDSTOP_Y false
+#define MAX_HARDWARE_ENDSTOP_X true
+#define MAX_HARDWARE_ENDSTOP_Y true
 #define MAX_HARDWARE_ENDSTOP_Z true
 
 //If your axes are only moving in one direction, make sure the endstops are connected properly.
@@ -644,7 +648,7 @@ on this endstop.
 // Sets direction of endstops when homing; 1=MAX, -1=MIN
 #define X_HOME_DIR -1
 #define Y_HOME_DIR -1
-#define Z_HOME_DIR 1
+#define Z_HOME_DIR -1
 
 // Delta robot radius endstop
 #define max_software_endstop_r true
@@ -657,12 +661,12 @@ on this endstop.
 //If true, axis won't move to coordinates greater than the defined lengths below.
 #define max_software_endstop_x true
 #define max_software_endstop_y true
-#define max_software_endstop_z false
+#define max_software_endstop_z true
 
 // If during homing the endstop is reached, ho many mm should the printer move back for the second try
 #define ENDSTOP_X_BACK_MOVE 5
 #define ENDSTOP_Y_BACK_MOVE 5
-#define ENDSTOP_Z_BACK_MOVE 2
+#define ENDSTOP_Z_BACK_MOVE 5
 
 // For higher precision you can reduce the speed for the second test on the endstop
 // during homing operation. The homing speed is divided by the value. 1 = same speed, 2 = half speed
@@ -674,7 +678,7 @@ on this endstop.
 // small amount back. This is also the case with H-belt systems.
 #define ENDSTOP_X_BACK_ON_HOME 1
 #define ENDSTOP_Y_BACK_ON_HOME 1
-#define ENDSTOP_Z_BACK_ON_HOME 5
+#define ENDSTOP_Z_BACK_ON_HOME 1
 
 // You can disable endstop checking for print moves. This is needed, if you get sometimes
 // false signals from your endstops. If your endstops don't give false signals, you
@@ -685,9 +689,9 @@ on this endstop.
 // For delta robot Z_MAX_LENGTH is the maximum travel of the towers and should be set to the distance between the hotend
 // and the platform when the printer is at its home position.
 // If EEPROM is enabled these values will be overidden with the values in the EEPROM
-#define X_MAX_LENGTH 165
-#define Y_MAX_LENGTH 175
-#define Z_MAX_LENGTH 116.820
+#define X_MAX_LENGTH 200
+#define Y_MAX_LENGTH 200
+#define Z_MAX_LENGTH 400
 
 // Coordinates for the minimum axis. Can also be negative if you want to have the bed start at 0 and the printer can go to the left side
 // of the bed. Maximum coordinate is given by adding the above X_MAX_LENGTH values.
@@ -770,6 +774,9 @@ on this endstop.
 */
 #define PRINTER_RADIUS 175
 
+/** Remove comment for more precise delta moves. Needs a bit more computation time. */
+//#define EXACT_DELTA_MOVES
+
 /**  \brief Horizontal distance bridged by the diagonal push rod when the end effector is in the center. It is pretty close to 50% of the push rod length (250 mm).
 */
 #define DELTA_RADIUS (PRINTER_RADIUS-END_EFFECTOR_HORIZONTAL_OFFSET-CARRIAGE_HORIZONTAL_OFFSET)
@@ -820,14 +827,14 @@ Mega. Used only for nonlinear systems like delta or tuga. */
     The axis order in all axis related arrays is X, Y, Z
      Overridden if EEPROM activated.
     */
-#define MAX_FEEDRATE_X 200
-#define MAX_FEEDRATE_Y 200
-#define MAX_FEEDRATE_Z 5
+#define MAX_FEEDRATE_X 3000
+#define MAX_FEEDRATE_Y 3000
+#define MAX_FEEDRATE_Z 3000
 
 /** Home position speed in mm/s. Overridden if EEPROM activated. */
 #define HOMING_FEEDRATE_X 80
 #define HOMING_FEEDRATE_Y 80
-#define HOMING_FEEDRATE_Z 3
+#define HOMING_FEEDRATE_Z 80
 
 /** Set order of axis homing. Use HOME_ORDER_XYZ and replace XYZ with your order. */
 #define HOMING_ORDER HOME_ORDER_ZXY
@@ -878,12 +885,12 @@ If the interval at full speed is below this value, smoothing is disabled for tha
 */
 #define MAX_ACCELERATION_UNITS_PER_SQ_SECOND_X 1500
 #define MAX_ACCELERATION_UNITS_PER_SQ_SECOND_Y 1500
-#define MAX_ACCELERATION_UNITS_PER_SQ_SECOND_Z 100
+#define MAX_ACCELERATION_UNITS_PER_SQ_SECOND_Z 1500
 
 /** \brief X, Y, Z max acceleration in mm/s^2 for travel moves.  Overridden if EEPROM activated.*/
 #define MAX_TRAVEL_ACCELERATION_UNITS_PER_SQ_SECOND_X 3000
 #define MAX_TRAVEL_ACCELERATION_UNITS_PER_SQ_SECOND_Y 3000
-#define MAX_TRAVEL_ACCELERATION_UNITS_PER_SQ_SECOND_Z 100
+#define MAX_TRAVEL_ACCELERATION_UNITS_PER_SQ_SECOND_Z 3000
 
 /** \brief Maximum allowable jerk.
 
@@ -1190,6 +1197,8 @@ Select the language to use.
 4 = Italian
 5 = Spanish
 6 = Swedish
+7 = French
+8 = Czech
 */
 #define UI_LANGUAGE 1
 
