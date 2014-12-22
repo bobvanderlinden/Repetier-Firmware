@@ -504,6 +504,8 @@ uint8_t Printer::setDestinationStepsFromGCode(GCode *com)
 
 void Printer::setup()
 {
+    Wire.begin();
+
     HAL::stopWatchdog();
 #if FEATURE_CONTROLLER==5
     HAL::delayMilliseconds(100);

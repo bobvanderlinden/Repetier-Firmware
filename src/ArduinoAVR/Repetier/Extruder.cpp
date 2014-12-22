@@ -22,9 +22,31 @@
 #include "Repetier.h"
 #include "pins_arduino.h"
 #include "ui.h"
+#include <Wire.h>
 #if EEPROM_MODE!=0
 #include "Eeprom.h"
 #endif
+
+
+enum _i2cCommuncationActions
+{
+    I2C_SETPOINTHOTEND1=1, 
+    I2C_SETPOINTHOTEND2,
+    I2C_SETLEDCOLOR,
+    I2C_SETMODELFANSPEED,
+    I2C_SETHOTENDFANSPEED,
+    I2C_GETHOTEND1TEMPERATURE,
+    I2C_GETHOTEND2TEMPERATURE,
+    I2C_SETHOTENDSOFF,
+    I2C_STARTAUTOTUNE1,
+    I2C_STARTAUTOTUNE2,
+    I2C_SETHOTEND1PWM,
+    I2C_SETHOTEND2PWM,
+    I2C_GETHOTEND1PWM,
+    I2C_GETHOTEND2PWM,
+    I2C_GETAUTOTUNESTATUS,
+    I2C_REBOOTTOBOOTLOADER,
+};
 
 
 uint8_t manageMonitor = 255; ///< Temp. we want to monitor with our host. 1+NUM_EXTRUDER is heated bed
@@ -600,6 +622,18 @@ const uint8_t temptables_num[12] PROGMEM = {NUMTEMPS_1,NUMTEMPS_2,NUMTEMPS_3,NUM
 
 void TemperatureController::updateCurrentTemperature()
 {
+    Wire.beginTransmission(70);
+    Wire.write(I2C_GETHOTEND1TEMPERATURE);
+    Wire.endTransmission();
+    
+    Wire.requestFrom(70, 2);
+    uint8_t tempb1 = Wire.read();
+    uint8_t tempb0 = Wire.read();
+    currentTemperature = word(tempb1,tempb0);
+
+    currentTemperatureC = (float)this->currentTemperature;
+    return;
+
     uint8_t type = sensorType;
     // get raw temperature
     switch(type)
@@ -778,6 +812,16 @@ void TemperatureController::updateCurrentTemperature()
 void TemperatureController::setTargetTemperature(float target)
 {
     targetTemperatureC = target;
+
+    uint16_t temperature = (uint16_t)target;
+    Wire.beginTransmission(70);
+    Wire.write(I2C_SETPOINTHOTEND1);
+    Wire.write((temperature>>8)&0xFF);
+    Wire.write(temperature&0xFF);
+    Write.endTransmission();
+
+    return;
+
     int temp = TEMP_FLOAT_TO_INT(target);
     uint8_t type = sensorType;
     switch(sensorType)
